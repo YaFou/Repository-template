@@ -1,0 +1,71 @@
+name: Continuous integration (experimental)
+
+on:
+  push:
+    paths:
+      - '!**.md'
+      - '!.github'
+      - '.github/workflows'
+  pull_request:
+    paths:
+      - '!**.md'
+      - '!.github'
+      - '.github/workflows'
+
+jobs:
+  test:
+    name: 'Test (PHP: ${{ matrix.php-versions }}, OS: ${{ matrix.operating-systems }}, dependencies: ${{ matrix.dependencies }})'
+    runs-on: ${{ matrix.operating-systems }}
+
+    # STRATEGY
+    strategy:
+      matrix:
+        php-versions: ['8.0']
+        operating-systems: [ubuntu-latest, windows-latest, macos-latest]
+        dependencies: ['lowest', 'stable']
+      fail-fast: false
+
+    steps:
+      # SETUP
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v1
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: dom, mbstring
+          coverage: xdebug
+      - name: Get Composer cache directory
+        id: composer-cache-directory
+        run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+      - name: Composer cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.composer-cache-directory.outputs.dir }}
+          key: ${{ matrix.operating-systems }}_php${{ matrix.php-versions }}_composer_dependencies-${{ matrix.dependencies }}_${{ hashFiles('**/composer.lock') }}
+          restore-keys: |
+            ${{ matrix.operating-systems }}_php${{ matrix.php-versions }}_composer_dependencies-${{ matrix.dependencies }}
+            ${{ matrix.operating-systems }}_php${{ matrix.php-versions }}_composer
+            ${{ matrix.operating-systems }}_php${{ matrix.php-versions }}
+            ${{ matrix.operating-systems }}
+        id: composer-cache
+      - name: Install dependencies (lowest)
+        if: ${{ matrix.dependencies == 'lowest' }}
+        run: composer update --no-interaction --no-progress --no-suggest --prefer-lowest --ignore-platform-reqs
+      - name: Install dependencies (stable)
+        if: ${{ matrix.dependencies == 'stable' }}
+        run: composer update --no-interaction --no-progress --no-suggest --prefer-stable --ignore-platform-reqs
+
+      # TESTS
+      - name: Setup problem matchers for PHPUnit
+        run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
+      - name: Run tests
+        run: |
+          mkdir -p var/coverage/report
+          ./vendor/bin/phpunit
+
+      - name: Upload coverage results
+        uses: actions/upload-artifact@v1
+        with:
+          name: 'Coverage results (PHP: ${{ matrix.php-versions }}, OS: ${{ matrix.operating-systems }}, dependencies: ${{ matrix.dependencies }})'
+          path: ./var/coverage/report
