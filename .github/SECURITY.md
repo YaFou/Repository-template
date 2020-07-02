@@ -6,7 +6,7 @@
 
 ## Support
 
-When a new major version is released, the last major release is support for **six months** and have a security support (major bugs and security vulnerabilities) for **one year** after.
+When a new minor version is released, the last minor release is supported for **three months** and have a security support (major bugs and security vulnerabilities) for **six months** after. When a new major version is released, the last major release is support for **six months** and have a security support (major bugs and security vulnerabilities) for **one year** after.
 
 |Version|State|Release date|End of support|End of security support|
 |-------|-----|------------|--------------|-----------------------|

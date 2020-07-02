@@ -2,15 +2,19 @@ name: Continuous integration (experimental)
 
 on:
   push:
-    paths:
-      - '!**.md'
-      - '!.github'
-      - '.github/workflows'
+    paths-ignore:
+      - '**.md'
+      - '!src/**.md'
+      - '!tests/**.md'
+      - '.github'
+      - '!.github/workflows'
   pull_request:
-    paths:
-      - '!**.md'
-      - '!.github'
-      - '.github/workflows'
+    paths-ignore:
+      - '**.md'
+      - '!src/**.md'
+      - '!tests/**.md'
+      - '.github'
+      - '!.github/workflows'
 
 jobs:
   test:
@@ -29,8 +33,15 @@ jobs:
       # SETUP
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Setup PHP
-        uses: shivammathur/setup-php@v1
+      - name: Setup PHP (dependencies lowest)
+        if: ${{ matrix.dependencies == 'lowest' }}
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          extensions: dom, mbstring
+      - name: Setup PHP (dependencies stable)
+        if: ${{ matrix.dependencies == 'stable' }}
+        uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
           extensions: dom, mbstring
@@ -65,7 +76,7 @@ jobs:
           ./vendor/bin/phpunit
 
       - name: Upload coverage results
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
           name: 'Coverage results (PHP: ${{ matrix.php-versions }}, OS: ${{ matrix.operating-systems }}, dependencies: ${{ matrix.dependencies }})'
           path: ./var/coverage/report

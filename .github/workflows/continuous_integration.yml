@@ -2,15 +2,19 @@ name: Continuous integration
 
 on:
   push:
-    paths:
-      - '!**.md'
-      - '!.github'
-      - '.github/workflows'
+    paths-ignore:
+      - '**.md'
+      - '!src/**.md'
+      - '!tests/**.md'
+      - '.github'
+      - '!.github/workflows'
   pull_request:
-    paths:
-      - '!**.md'
-      - '!.github'
-      - '.github/workflows'
+    paths-ignore:
+      - '**.md'
+      - '!src/**.md'
+      - '!tests/**.md'
+      - '.github'
+      - '!.github/workflows'
 
 jobs:
   test:
@@ -30,7 +34,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Setup PHP
-        uses: shivammathur/setup-php@v1
+        uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
           extensions: dom, mbstring
@@ -65,9 +69,9 @@ jobs:
           ./vendor/bin/phpunit
 
       - name: Upload coverage results
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
-          name: 'Coverage results (PHP: ${{ matrix.php-versions }}, OS: ${{ matrix.operating-systems }}, dependencies: ${{ matrix.dependencies }})'
+          name: 'Coverage results (PHP ${{ matrix.php-versions }}, OS ${{ matrix.operating-systems }}, dependencies ${{ matrix.dependencies }})'
           path: ./var/coverage/report
 
   lint:
@@ -79,7 +83,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
       - name: Setup PHP
-        uses: shivammathur/setup-php@v1
+        uses: shivammathur/setup-php@v2
         with:
           php-version: '7.4'
       - name: Get Composer cache directory
