@@ -2,7 +2,7 @@
 name: Bug report
 about: Report something which does not work correctly.
 labels: bug
-assignees: @<owner>
+assignees: <Owner>
 ---
 
 <!--

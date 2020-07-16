@@ -23,8 +23,8 @@
     },
     "readme": ".github/README.md",
     "support": {
-        "issues": "https://github.com/<owner>/<repo>/issues",
-        "source": "https://github.com/<owner>/<repo>"
+        "issues": "https://github.com/<Owner>/<Repo>/issues",
+        "source": "https://github.com/<Owner>/<Repo>"
     },
     "require": {
         "php": "^7.2"
@@ -36,12 +36,17 @@
     },
     "autoload": {
         "psr-4": {
-            "<owner>\\<repo>\\": "src/"
+            "<Owner>\\<Repo>\\": "src/"
         }
     },
     "autoload-dev": {
         "psr-4": {
-            "<owner>\\<repo>\\Tests\\": "tests/"
+            "<Owner>\\<Repo>\\Tests\\": "tests/"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+            "dev-next": "1.0.x-dev"
         }
     }
 }

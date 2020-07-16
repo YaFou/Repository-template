@@ -2,7 +2,7 @@
 name: Feature request
 about: Request a new feature or an enhancement.
 labels: enhancement
-assignees: @<owner>
+assignees: <Owner>
 ---
 
 <!--

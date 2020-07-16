@@ -33,19 +33,11 @@ jobs:
       # SETUP
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Setup PHP (dependencies lowest)
-        if: ${{ matrix.dependencies == 'lowest' }}
+      - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php-versions }}
           extensions: dom, mbstring
-      - name: Setup PHP (dependencies stable)
-        if: ${{ matrix.dependencies == 'stable' }}
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php-versions }}
-          extensions: dom, mbstring
-          coverage: xdebug
       - name: Get Composer cache directory
         id: composer-cache-directory
         run: echo "::set-output name=dir::$(composer config cache-files-dir)"
@@ -71,12 +63,4 @@ jobs:
       - name: Setup problem matchers for PHPUnit
         run: echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
       - name: Run tests
-        run: |
-          mkdir -p var/coverage/report
-          ./vendor/bin/phpunit
-
-      - name: Upload coverage results
-        uses: actions/upload-artifact@v2
-        with:
-          name: 'Coverage results (PHP: ${{ matrix.php-versions }}, OS: ${{ matrix.operating-systems }}, dependencies: ${{ matrix.dependencies }})'
-          path: ./var/coverage/report
+        run: ./vendor/bin/phpunit --no-coverage
